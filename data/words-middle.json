@@ -1,12 +1,7 @@
 [
-  "avion",
-  "camino",
-  "hermano",
-  "ventana",
-  "amigo",
-  "perdido",
-  "pelota",
-  "jardin",
-  "raton",
-  "zapato"
+  "sol", "casa", "agua", "tiempo", "persona", "trabajo", "mundo", "país", "grupo", "vez",
+  "avion", "camino", "hermano", "ventana", "amigo", "perdido", "pelota", "jardin", "raton", "zapato",
+  "escuela", "ciudad", "familia", "momento", "sistema", "servicio", "empresa", "problema", "historia", "manera",
+  "cabeza", "semana", "músico", "programa", "gobierno", "presente", "proyecto", "control", "proceso", "sociedad",
+  "desarrollo", "resultado", "comunidad", "seguridad", "actividad", "tecnología", "información", "educación", "situación", "experiencia"
 ]
