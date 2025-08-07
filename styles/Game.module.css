@@ -1,0 +1,49 @@
+.gameArea {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #000;
+  overflow: hidden;
+  border: 1px solid #0f0;
+}
+
+.word {
+  position: absolute;
+  color: #0ff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 20px;
+  transform: translateX(-50%);
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.buildings {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.building {
+  width: 40px;
+  height: 40px;
+  background: #0f0;
+}
+
+.buildingDestroyed {
+  width: 40px;
+  height: 40px;
+  background: #400;
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+}
