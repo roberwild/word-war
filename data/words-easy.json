@@ -1,12 +1,7 @@
 [
-  "sol",
-  "luna",
-  "casa",
-  "perro",
-  "gato",
-  "flor",
-  "mar",
-  "pan",
-  "sal",
-  "té"
+  "sol", "mar", "pan", "sal", "té", "luz", "día", "año", "dos", "paz",
+  "luna", "casa", "gato", "flor", "mesa", "agua", "aire", "vida", "amor", "niño",
+  "perro", "campo", "papel", "fuego", "tierra", "libro", "mano", "cara", "ojo", "pie",
+  "leche", "coche", "playa", "madre", "padre", "hijo", "hija", "rojo", "azul", "verde",
+  "blanco", "negro", "grande", "pequeño", "bueno", "malo", "nuevo", "viejo", "alto", "bajo"
 ]
