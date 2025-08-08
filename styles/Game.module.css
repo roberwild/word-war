@@ -1,12 +1,13 @@
 .gameArea {
   position: relative;
-  width: 70%;
-  height: 72vh;
+  width: min(70%, 100%);
+  height: calc(var(--vh, 1vh) * 72);
   min-height: 420px;
   margin: 0 auto;
   background: radial-gradient(ellipse at bottom, #001010 0%, #000 60%, #000 100%);
   overflow: hidden;
   border: 2px solid #39ff14;
+  box-sizing: border-box;
 }
 
 .shake {
@@ -30,6 +31,11 @@
   font-size: 18px;
   transform: translateX(-50%);
   z-index: 2;
+  /* Evitar que se desborde horizontalmente en móviles */
+  max-width: calc(100% - 16px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hud {
@@ -39,6 +45,16 @@
   font-family: 'Press Start 2P', 'Courier New', Courier, monospace;
   color: #f8f8f2;
   text-shadow: 0 0 6px rgba(57, 255, 20, 0.6);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+.safeWrap {
+  padding-left: max(env(safe-area-inset-left), 8px);
+  padding-right: max(env(safe-area-inset-right), 8px);
+  overflow-x: hidden;
 }
 
 .buildings {
@@ -224,4 +240,16 @@
     transparent 4px
   );
   pointer-events: none;
+}
+
+/* Ajustes para móviles y tablets: permitir reducir altura cuando aparece el teclado */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .gameArea {
+    min-height: 0;
+    /* Dentro del contenedor seguro, ocupar todo el ancho disponible sin overflow */
+    width: 100%;
+    margin: 0 auto;
+    max-width: 100%;
+    height: calc(var(--vh, 1vh) * 92);
+  }
 }

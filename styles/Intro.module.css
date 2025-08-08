@@ -4,7 +4,7 @@
   background: linear-gradient(45deg, #cc5500, #dd6600, #ee7700, #cc5500);
   background-size: 400% 400%;
   animation: gradientShift 8s ease infinite;
-  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -13,6 +13,11 @@
   font-family: 'Press Start 2P', monospace;
   overflow: hidden;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: max(env(safe-area-inset-left), 8px);
+  padding-right: max(env(safe-area-inset-right), 8px);
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
 }
 
 @keyframes gradientShift {
@@ -27,7 +32,8 @@
   border-radius: 12px;
   padding: 40px;
   margin: 20px;
-  max-width: 500px;
+  width: 100%;
+  max-width: 600px;
   position: relative;
   box-shadow: 
     0 0 30px rgba(221, 102, 0, 0.4),
@@ -225,7 +231,7 @@
   text-align: center;
   outline: none;
   min-width: 300px;
-  text-shadow: 0 0 5px #ffff00;
+  text-shadow: 0 0 2px #ffff00;
 }
 
 .nameInput:focus {
@@ -236,7 +242,8 @@
 }
 
 .nameInput::placeholder {
-  color: #666;
+  color: #bdbdbd;
+  text-shadow: 0 0 1px rgba(255,255,0,0.6);
 }
 
 .startButton {
@@ -341,14 +348,67 @@
   pointer-events: none;
 }
 
+/* Intro: palabras, rayos y explosiones en el arte */
+.introWord {
+  position: absolute;
+  color: #6cf9ff;
+  text-shadow: 0 0 6px rgba(108, 249, 255, 0.8);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  transform: translateX(-50%);
+  user-select: none;
+  pointer-events: none;
+}
+
+.introBeam {
+  position: absolute;
+  height: 2px;
+  background: transparent;
+  transform-origin: left center;
+  pointer-events: none;
+}
+.introBeamInner {
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(57,255,20,0) 0%, rgba(57,255,20,1) 20%, rgba(57,255,20,1) 80%, rgba(57,255,20,0) 100%);
+  box-shadow: 0 0 6px rgba(57,255,20,0.9), 0 0 12px rgba(57,255,20,0.6);
+  animation: intro-beam-fade 220ms ease-out forwards;
+}
+
+@keyframes intro-beam-fade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.introExplosion {
+  position: absolute;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,230,180,0.9) 20%, rgba(255,140,0,0.9) 45%, rgba(255,50,0,0.6) 65%, rgba(255,0,0,0) 100%),
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 40%),
+    radial-gradient(circle at 70% 70%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 45%);
+  box-shadow: 0 0 18px rgba(255, 200, 0, 0.95), 0 0 30px rgba(255, 120, 0, 0.75), 0 0 48px rgba(255, 50, 0, 0.6);
+  transform: scale(0.4);
+  opacity: 0.9;
+  animation: intro-boom 600ms ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes intro-boom {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
 @media (max-width: 768px) {
   .gameTitle {
     font-size: 2rem;
   }
   
   .cartridge {
-    padding: 20px;
+    padding: 16px;
     margin: 10px;
+    max-width: 520px;
   }
   
   .nameInput {
@@ -359,5 +419,15 @@
   .startButton {
     font-size: 14px;
     padding: 12px 30px;
+  }
+
+  /* Evitar que el autor se superponga en móvil: moverlo debajo y centrarlo */
+  .credits {
+    position: static;
+    bottom: auto;
+    right: auto;
+    margin-top: 12px;
+    text-align: center;
+    font-size: 9px;
   }
 }

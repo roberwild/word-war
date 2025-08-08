@@ -31,11 +31,11 @@ export default function SelectLevel() {
       </div>
       <div className={styles.scanlines}></div>
 
-      <div className={styles.cartridge}>
+      <div className={styles.cartridge} style={{ width: '100%', maxWidth: 600 }}>
         <h1 className={styles.gameTitle} style={{ fontSize: '2.5rem' }}>SELECCIONA NIVEL</h1>
         <p className={styles.subtitle}>ELIGE TU DIFICULTAD DE MECANOGRAFÍA</p>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '30px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
           {Object.entries(levelDescriptions).map(([level, info]) => (
             <button 
               key={level}
@@ -45,7 +45,7 @@ export default function SelectLevel() {
                 background: `linear-gradient(145deg, ${info.color}, ${info.color}aa)`,
                 color: level === 'easy' ? '#000' : '#fff',
                 fontSize: '14px',
-                padding: '20px'
+                padding: '16px'
               }}
             >
               {info.name}
