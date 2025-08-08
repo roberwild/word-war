@@ -33,22 +33,22 @@ export default function Scoreboard() {
       </div>
       <div className={styles.scanlines}></div>
 
-      <div className={styles.cartridge} style={{ maxWidth: '600px' }}>
+      <div className={styles.cartridge} style={{ width: '100%', maxWidth: 600 }}>
         <h1 className={styles.gameTitle}>RANKING</h1>
         <p className={styles.subtitle}>HALL OF FAME</p>
         
-        <div style={{ margin: '30px 0' }}>
+        <div style={{ margin: '20px 0', maxHeight: '40vh', overflowY: 'auto' }}>
           <Leaderboard scores={scores} />
         </div>
         
-        <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button 
             className={styles.startButton}
             onClick={() => handleNavigation(() => router.push('/'))}
             style={{ 
               background: 'linear-gradient(145deg, #6cf9ff, #39a3ff)',
               fontSize: '12px',
-              padding: '15px 25px'
+              padding: '12px 18px'
             }}
           >
             🏠 VOLVER AL INICIO
@@ -62,7 +62,7 @@ export default function Scoreboard() {
             style={{ 
               background: 'linear-gradient(145deg, #39ff14, #2dd60a)',
               fontSize: '12px',
-              padding: '15px 25px'
+              padding: '12px 18px'
             }}
           >
             🎮 VOLVER A JUGAR

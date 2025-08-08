@@ -6,6 +6,26 @@ body {
   background: #000;
   color: #39ff14;
   font-family: 'Press Start 2P', 'Courier New', Courier, monospace;
+  /* Evitar zoom automático en iOS */
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Evitar rebases del viewport por subpíxeles/redondeos en iOS */
+@supports (height: 100dvh) {
+  .safeWrap { width: 100%; max-width: 100%; }
+}
+
+/* Forzar que el layout se ajuste en iOS reduciendo el ancho del viewport disponible en móviles */
+@media (max-width: 900px) {
+  :root {
+    --viewport-width-adjust: 96vw;
+  }
 }
 
 button {

@@ -20,8 +20,9 @@ const wordLists = {
   advanced: advancedWords,
 };
 
-const spawnRates = { easy: 1000, middle: 700, advanced: 400 };
-const speedRates = { easy: 40, middle: 70, advanced: 100 };
+// Dificultad reducida al 50%: menos spawns (intervalos x2) y caída más lenta (velocidad /2)
+const spawnRates = { easy: 2000, middle: 1400, advanced: 800 };
+const speedRates = { easy: 20, middle: 35, advanced: 50 };
 
 export default function Game() {
   const { playerName, level } = useGame();
@@ -40,6 +41,9 @@ export default function Game() {
   const animationRef = useRef();
   const gameAreaRef = useRef(null);
   const buildingsRef = useRef(buildingsAlive);
+  const missilesRef = useRef(missiles);
+  const deckRef = useRef([]);
+  const deckIndexRef = useRef(0);
   const wordPool = wordLists[level] || [];
 
   useEffect(() => {
@@ -58,6 +62,34 @@ export default function Game() {
     };
   }, []);
 
+  // Ajustar viewport en móviles/tablets para que no lo tape el teclado
+  useEffect(() => {
+    const updateVh = () => {
+      try {
+        const vv = typeof window !== 'undefined' && window.visualViewport ? window.visualViewport : null;
+        // En móviles Safari, usar visualViewport.height y restar safe-area inferior si procede
+        const height = vv?.height || window.innerHeight;
+        const vh = height * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      } catch (_) {}
+    };
+    updateVh();
+    window.addEventListener('resize', updateVh);
+    window.addEventListener('orientationchange', updateVh);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateVh);
+      window.visualViewport.addEventListener('scroll', updateVh);
+    }
+    return () => {
+      window.removeEventListener('resize', updateVh);
+      window.removeEventListener('orientationchange', updateVh);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateVh);
+        window.visualViewport.removeEventListener('scroll', updateVh);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -67,9 +99,59 @@ export default function Game() {
   }, [buildingsAlive]);
 
   useEffect(() => {
+    missilesRef.current = missiles;
+  }, [missiles]);
+
+  // Crear un mazo (deck) barajado para mayor variedad y menos repeticiones
+  const shuffleArray = useCallback((arr) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }, []);
+
+  useEffect(() => {
+    deckRef.current = shuffleArray(wordPool);
+    deckIndexRef.current = 0;
+  }, [level, wordPool, shuffleArray]);
+
+  useEffect(() => {
+    const pickNextWord = () => {
+      const active = new Set((missilesRef.current || []).map((m) => m.word.toLowerCase()));
+      let tries = 0;
+      const maxTries = (deckRef.current?.length || 0) * 2 + 10;
+      while (tries < maxTries) {
+        if (!deckRef.current || deckIndexRef.current >= deckRef.current.length) {
+          deckRef.current = shuffleArray(wordPool);
+          deckIndexRef.current = 0;
+        }
+        const candidate = deckRef.current[deckIndexRef.current++];
+        if (!active.has(candidate.toLowerCase())) {
+          return candidate;
+        }
+        tries++;
+      }
+      // fallback
+      return wordPool[Math.floor(Math.random() * wordPool.length)];
+    };
+
     const spawn = () => {
-      const word = wordPool[Math.floor(Math.random() * wordPool.length)];
-      const x = 5 + Math.random() * 90;
+      const word = pickNextWord();
+      // Calcular un rango seguro para que la palabra no se salga por los bordes
+      const areaEl = gameAreaRef.current;
+      const areaW = areaEl ? areaEl.clientWidth : 400;
+      const estimatedCharWidth = 12; // aproximación en px por carácter
+      const borderPaddingPx = 10; // margen de seguridad respecto al borde verde
+      const estimatedWordWidth = Math.min(
+        word.length * estimatedCharWidth,
+        Math.max(0, areaW - borderPaddingPx * 2)
+      );
+      const minCenterPx = (estimatedWordWidth / 2) + borderPaddingPx;
+      const maxCenterPx = Math.max(minCenterPx, areaW - ((estimatedWordWidth / 2) + borderPaddingPx));
+      const xCenterPx = minCenterPx + Math.random() * (maxCenterPx - minCenterPx);
+      const x = (xCenterPx / areaW) * 100;
       const colors = ['#6cf9ff', '#ff6cf1', '#ffd56c', '#6cff7a', '#ff6c6c', '#b06cff', '#6cc9ff'];
       const color = colors[Math.floor(Math.random() * colors.length)];
       setMissiles((prev) => [
@@ -125,7 +207,7 @@ export default function Game() {
             }
             aliveSnapshot[targetIdx] = false;
             const x = ((targetIdx + 0.5) * w) / 8;
-            const y = p.y;
+            const { y } = p;
             const buildingHeight = 28 + (targetIdx % 3) * 10;
             const boomY = y - Math.max(24, buildingHeight * 0.8);
             const id = `floor-imp-${now}-${i}`;
@@ -219,17 +301,32 @@ export default function Game() {
     [setScore]
   );
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    try {
+      const ua = navigator.userAgent || navigator.vendor || '';
+      const touch = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
+      const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i;
+      setIsMobile(mobileRegex.test(ua) || touch);
+    } catch (_) {
+      setIsMobile(false);
+    }
+  }, []);
+
+  const normalizeForMobile = (s) => s.normalize('NFD').replace(/\p{Diacritic}+/gu, '');
+
   const handleChange = (e) => {
     const val = e.target.value;
+    const normalizedVal = isMobile ? normalizeForMobile(val) : val;
     let remaining = val;
-    let lowerVal = val.toLowerCase();
+    let lowerVal = normalizedVal.toLowerCase();
     let foundAny = false;
     
 
     
     if (missiles.length > 0 && lowerVal.length) {
       missiles.forEach((m) => {
-        const w = m.word.toLowerCase();
+        const w = (isMobile ? normalizeForMobile(m.word) : m.word).toLowerCase();
         const idx = lowerVal.indexOf(w);
         if (idx !== -1) {
           checkWord(m.word);
@@ -262,7 +359,7 @@ export default function Game() {
   }
 
   return (
-    <div>
+    <div className={styles.safeWrap} style={{ overflowX: 'hidden' }}>
       <HUD score={score} wpm={wpm} />
       <div
         className={`${styles.gameArea} ${shake ? styles.shake : ''}`}
