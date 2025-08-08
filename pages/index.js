@@ -24,6 +24,20 @@ export default function Home() {
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
     updateVh();
+    // Intentar desbloquear audio ante primer gesto en intro
+    const unlock = () => {
+      try {
+        // Llamar a startIntroMusic asegura resume() tras interacción
+        startIntroMusic();
+      } catch (_) {}
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('touchstart', unlock, { passive: true });
+    window.addEventListener('click', unlock, { passive: true });
     window.addEventListener('resize', updateVh);
     window.addEventListener('orientationchange', updateVh);
     if (window.visualViewport) {
@@ -34,6 +48,10 @@ export default function Home() {
     return () => {
       clearTimeout(timer);
       stopIntroMusic();
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('keydown', unlock);
       window.removeEventListener('resize', updateVh);
       window.removeEventListener('orientationchange', updateVh);
       if (window.visualViewport) {

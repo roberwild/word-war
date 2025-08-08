@@ -51,13 +51,33 @@ export default function Game() {
     // desbloquear audio en el primer gesto del usuario
     const unlock = () => {
       resumeAudio();
+      // Disparo ínfimo para activar el pipeline de audio en iOS
+      try {
+        const ctx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+        if (ctx) {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          g.gain.value = 0.0001;
+          o.connect(g);
+          g.connect(ctx.destination);
+          const now = ctx.currentTime;
+          o.start(now);
+          o.stop(now + 0.01);
+        }
+      } catch (_) {}
       window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
       window.removeEventListener('keydown', unlock);
     };
     window.addEventListener('pointerdown', unlock);
+    window.addEventListener('touchstart', unlock, { passive: true });
+    window.addEventListener('click', unlock, { passive: true });
     window.addEventListener('keydown', unlock);
     return () => {
       window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
       window.removeEventListener('keydown', unlock);
     };
   }, []);
